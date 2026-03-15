@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="theme-color" content="#1a4a37">
+  <title>Café da Manhã — Pousada Manacá</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Nunito:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --cream:#fdf8f0;--green:#1a4a37;--green-lt:#2d6b52;
+      --amber:#c87832;--brown:#2a1f0e;--muted:#7a6a55;
+      --card:#ffffff;--border:#e8dece;--shadow:rgba(26,74,55,0.09);
+      --r:14px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{background:var(--cream);color:var(--brown);font-family:'Nunito',sans-serif;min-height:100vh;padding-bottom:110px}
+    body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 20% 20%,rgba(200,120,50,.05) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(26,74,55,.07) 0%,transparent 50%);pointer-events:none;z-index:0}
+
+    /* Header */
+    header{background:var(--green);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.18)}
+    .header-top{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px}
+    .pousada-name{font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.2}
+    .pousada-name small{display:block;font-family:'Nunito',sans-serif;font-size:.6rem;font-weight:300;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-top:2px}
+    .mesa-badge{background:var(--amber);color:#fff;font-weight:700;font-size:.78rem;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+    .lang-bar{display:flex;gap:5px;padding:5px 16px 9px;border-top:1px solid rgba(255,255,255,.12)}
+    .lang-btn{background:transparent;border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.65);font-family:'Nunito',sans-serif;font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:20px;cursor:pointer;transition:all .2s;letter-spacing:.04em}
+    .lang-btn.active{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.6);color:#fff}
+
+    /* Main */
+    main{position:relative;z-index:1;padding:18px 13px 0;max-width:520px;margin:0 auto}
+
+    /* Category header */
+    .cat-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--green);margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+    .cat-title:first-child{margin-top:0}
+    .cat-title::after{content:'';flex:1;height:1px;background:var(--border)}
+    .cat-icon{font-size:1.1rem}
+
+    /* Item row — compact horizontal layout */
+    .item-row{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:8px;display:flex;align-items:center;gap:0;overflow:hidden;box-shadow:0 1px 6px var(--shadow);transition:border-color .2s}
+    .item-row.has-qty{border-color:var(--green)}
+    .item-label{flex:1;padding:12px 14px;min-width:0}
+    .item-name{font-weight:700;font-size:.9rem;color:var(--brown);line-height:1.2}
+    .item-sub{font-size:.72rem;color:var(--muted);margin-top:2px;font-style:italic}
+    .qty-ctrl{display:flex;align-items:center;padding:0 10px;border-left:1px solid var(--border);gap:0;flex-shrink:0}
+    .qb{background:none;border:none;width:32px;height:44px;font-size:1.25rem;font-weight:300;color:var(--green);cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-tap-highlight-color:transparent;user-select:none}
+    .qb:active{background:rgba(26,74,55,.07)}
+    .qn{min-width:26px;text-align:center;font-weight:700;font-size:.95rem;color:var(--brown)}
+
+    /* Sub-options */
+    .sub-opts{display:none;padding:0 14px 12px;border-top:1px dashed var(--border);background:var(--card);animation:fadeIn .2s ease}
+    .sub-opts.visible{display:block}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
+    .sub-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;margin-top:8px}
+    .chips{display:flex;flex-wrap:wrap;gap:5px}
+    .chip{background:var(--cream);border:1.5px solid var(--border);color:var(--muted);font-family:'Nunito',sans-serif;font-size:.75rem;font-weight:600;padding:4px 11px;border-radius:20px;cursor:pointer;transition:all .15s;-webkit-tap-highlight-color:transparent}
+    .chip.sel{background:var(--amber);border-color:var(--amber);color:#fff}
+
+    /* Notes */
+    .notes-area{width:100%;border:1.5px solid var(--border);border-radius:var(--r);background:var(--card);font-family:'Nunito',sans-serif;font-size:.88rem;color:var(--brown);padding:11px 13px;resize:none;outline:none;box-shadow:0 1px 6px var(--shadow);transition:border-color .2s;margin-top:0}
+    .notes-area:focus{border-color:var(--green)}
+    .notes-area::placeholder{color:#bdb0a0}
+
+    /* Submit bar */
+    .submit-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:10px 18px;box-shadow:0 -4px 20px rgba(0,0,0,.09);z-index:200;display:flex;gap:10px;align-items:center;max-width:520px;margin:0 auto}
+    .order-summary{flex:1;font-size:.78rem;color:var(--muted);line-height:1.3}
+    .order-summary strong{display:block;color:var(--green);font-size:.92rem}
+    .submit-btn{background:var(--green);color:#fff;border:none;border-radius:40px;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;padding:12px 22px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 14px rgba(26,74,55,.28);transition:all .2s}
+    .submit-btn:active{transform:scale(.97)}
+    .submit-btn:disabled{background:#c4bdb4;box-shadow:none;cursor:default}
+    .submit-btn.loading{background:var(--green-lt)}
+
+    /* Thank-you */
+    #ty{display:none;position:fixed;inset:0;background:var(--cream);z-index:1000;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;animation:fadeIn .4s ease}
+    #ty.show{display:flex}
+    .ty-icon{font-size:3.8rem;margin-bottom:18px;animation:pop .5s cubic-bezier(.34,1.56,.64,1) both}
+    @keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+    .ty-title{font-family:'Playfair Display',serif;font-size:1.7rem;color:var(--green);margin-bottom:10px}
+    .ty-msg{color:var(--muted);font-size:.92rem;line-height:1.6;max-width:270px}
+    .ty-mesa{margin-top:18px;background:var(--green);color:#fff;padding:9px 22px;border-radius:30px;font-weight:700;font-size:.95rem}
+    .ty-new{margin-top:20px;background:transparent;border:2px solid var(--green);color:var(--green);padding:9px 22px;border-radius:30px;font-family:'Nunito',sans-serif;font-size:.88rem;font-weight:700;cursor:pointer}
+
+    /* Error */
+    #err-screen{display:none;position:fixed;inset:0;background:var(--cream);z-index:1000;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px}
+    #err-screen.show{display:flex}
+    #err-screen h2{font-family:'Playfair Display',serif;color:var(--green);margin-top:14px}
+    #err-screen p{color:var(--muted);font-size:.88rem;margin-top:10px;max-width:250px;line-height:1.6}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="pousada-name">Pousada Manacá<small>Ilha Grande · Abraão</small></div>
+    <div class="mesa-badge" id="mesa-badge">Mesa —</div>
+  </div>
+  <div class="lang-bar">
+    <button class="lang-btn active" data-lang="pt" onclick="setLang(this)">🇧🇷 PT</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang(this)">🇬🇧 EN</button>
+    <button class="lang-btn" data-lang="es" onclick="setLang(this)">🇪🇸 ES</button>
+    <button class="lang-btn" data-lang="fr" onclick="setLang(this)">🇫🇷 FR</button>
+  </div>
+</header>
+
+<main id="menu-main">
+
+  <!-- ══ BEBIDAS ══════════════════════════════════ -->
+  <div class="cat-title"><span class="cat-icon">☕</span><span id="cat-bebidas">Bebidas</span></div>
+
+  <div class="item-row" id="card-cafe">
+    <div class="item-label"><div class="item-name" id="name-cafe">Café</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('cafe',-1)">−</button>
+      <span class="qn" id="qty-cafe">0</span>
+      <button class="qb" onclick="chg('cafe',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-cha">
+    <div class="item-label"><div class="item-name" id="name-cha">Chá inglês ou infusão</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('cha',-1)">−</button>
+      <span class="qn" id="qty-cha">0</span>
+      <button class="qb" onclick="chg('cha',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-leite">
+    <div class="item-label">
+      <div class="item-name" id="name-leite">Leite</div>
+      <div class="item-sub" id="sub-leite">quente ou frio</div>
+    </div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('leite',-1)">−</button>
+      <span class="qn" id="qty-leite">0</span>
+      <button class="qb" onclick="chg('leite',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-chocolate">
+    <div class="item-label"><div class="item-name" id="name-chocolate">Nescau ou Ovomaltine</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('chocolate',-1)">−</button>
+      <span class="qn" id="qty-chocolate">0</span>
+      <button class="qb" onclick="chg('chocolate',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-suco">
+    <div class="item-label">
+      <div class="item-name" id="name-suco">Suco Manacá</div>
+      <div class="item-sub" id="sub-suco">feito com 5 frutas</div>
+    </div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('suco',-1)">−</button>
+      <span class="qn" id="qty-suco">0</span>
+      <button class="qb" onclick="chg('suco',1)">+</button>
+    </div>
+  </div>
+
+  <!-- ══ PÃES & BOLOS ════════════════════════════ -->
+  <div class="cat-title"><span class="cat-icon">🍞</span><span id="cat-paes">Pães & Bolos</span></div>
+
+  <div class="item-row" id="card-pao-frances">
+    <div class="item-label"><div class="item-name" id="name-pao-frances">Pão francês</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('pao-frances',-1)">−</button>
+      <span class="qn" id="qty-pao-frances">0</span>
+      <button class="qb" onclick="chg('pao-frances',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-pao-branco">
+    <div class="item-label"><div class="item-name" id="name-pao-branco">Pão de forma branco</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('pao-branco',-1)">−</button>
+      <span class="qn" id="qty-pao-branco">0</span>
+      <button class="qb" onclick="chg('pao-branco',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-pao-integral">
+    <div class="item-label"><div class="item-name" id="name-pao-integral">Pão de forma integral</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('pao-integral',-1)">−</button>
+      <span class="qn" id="qty-pao-integral">0</span>
+      <button class="qb" onclick="chg('pao-integral',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-bolo">
+    <div class="item-label"><div class="item-name" id="name-bolo">Bolo do dia</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('bolo',-1)">−</button>
+      <span class="qn" id="qty-bolo">0</span>
+      <button class="qb" onclick="chg('bolo',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-tapioca">
+    <div class="item-label"><div class="item-name" id="name-tapioca">Tapioca</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('tapioca',-1)">−</button>
+      <span class="qn" id="qty-tapioca">0</span>
+      <button class="qb" onclick="chg('tapioca',1)">+</button>
+    </div>
+  </div>
+
+  <!-- ══ FRUTAS & ACOMPANHAMENTOS ════════════════ -->
+  <div class="cat-title"><span class="cat-icon">🍓</span><span id="cat-frutas">Frutas & Acompanhamentos</span></div>
+
+  <div class="item-row" id="card-salada-fruta">
+    <div class="item-label"><div class="item-name" id="name-salada-fruta">Salada de fruta Manacá</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('salada-fruta',-1)">−</button>
+      <span class="qn" id="qty-salada-fruta">0</span>
+      <button class="qb" onclick="chg('salada-fruta',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-manteiga">
+    <div class="item-label"><div class="item-name" id="name-manteiga">Manteiga</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('manteiga',-1)">−</button>
+      <span class="qn" id="qty-manteiga">0</span>
+      <button class="qb" onclick="chg('manteiga',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-geleia">
+    <div class="item-label"><div class="item-name" id="name-geleia">Geleia de frutas vermelhas</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('geleia',-1)">−</button>
+      <span class="qn" id="qty-geleia">0</span>
+      <button class="qb" onclick="chg('geleia',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-mel">
+    <div class="item-label"><div class="item-name" id="name-mel">Mel</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('mel',-1)">−</button>
+      <span class="qn" id="qty-mel">0</span>
+      <button class="qb" onclick="chg('mel',1)">+</button>
+    </div>
+  </div>
+
+  <!-- ══ FRIOS ════════════════════════════════════ -->
+  <div class="cat-title"><span class="cat-icon">🧀</span><span id="cat-frios">Frios</span></div>
+
+  <div class="item-row" id="card-peito-peru">
+    <div class="item-label"><div class="item-name" id="name-peito-peru">Peito de peru</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('peito-peru',-1)">−</button>
+      <span class="qn" id="qty-peito-peru">0</span>
+      <button class="qb" onclick="chg('peito-peru',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-presunto">
+    <div class="item-label"><div class="item-name" id="name-presunto">Presunto</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('presunto',-1)">−</button>
+      <span class="qn" id="qty-presunto">0</span>
+      <button class="qb" onclick="chg('presunto',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-mozzarella">
+    <div class="item-label"><div class="item-name" id="name-mozzarella">Queijo mozzarella</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('mozzarella',-1)">−</button>
+      <span class="qn" id="qty-mozzarella">0</span>
+      <button class="qb" onclick="chg('mozzarella',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-queijo-minas">
+    <div class="item-label"><div class="item-name" id="name-queijo-minas">Queijo minas</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('queijo-minas',-1)">−</button>
+      <span class="qn" id="qty-queijo-minas">0</span>
+      <button class="qb" onclick="chg('queijo-minas',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-goiabada">
+    <div class="item-label"><div class="item-name" id="name-goiabada">Goiabada</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('goiabada',-1)">−</button>
+      <span class="qn" id="qty-goiabada">0</span>
+      <button class="qb" onclick="chg('goiabada',1)">+</button>
+    </div>
+  </div>
+
+  <!-- ══ IOGURTE & GRANOLA ════════════════════════ -->
+  <div class="cat-title"><span class="cat-icon">🥛</span><span id="cat-laticinios">Iogurte & Granola</span></div>
+
+  <div class="item-row" id="card-iogurte">
+    <div class="item-label"><div class="item-name" id="name-iogurte">Iogurte caseiro</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('iogurte',-1)">−</button>
+      <span class="qn" id="qty-iogurte">0</span>
+      <button class="qb" onclick="chg('iogurte',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-granola">
+    <div class="item-label"><div class="item-name" id="name-granola">Granola</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('granola',-1)">−</button>
+      <span class="qn" id="qty-granola">0</span>
+      <button class="qb" onclick="chg('granola',1)">+</button>
+    </div>
+  </div>
+
+  <!-- ══ OVOS ════════════════════════════════════ -->
+  <div class="cat-title"><span class="cat-icon">🍳</span><span id="cat-ovos">Ovos</span></div>
+
+  <div class="item-row" id="card-ovo" style="flex-wrap:wrap">
+    <div class="item-label"><div class="item-name" id="name-ovo">Ovo</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('ovo',-1)">−</button>
+      <span class="qn" id="qty-ovo">0</span>
+      <button class="qb" onclick="chg('ovo',1)">+</button>
+    </div>
+    <div class="sub-opts" id="opts-ovo" style="width:100%">
+      <p class="sub-lbl" id="lbl-preparo">Preparo</p>
+      <div class="chips" id="chips-ovo">
+        <button class="chip" data-val="Cozido" onclick="toggleChip(this,'ovo-prep')">🥚 <span id="chip-cozido">Cozido</span></button>
+        <button class="chip" data-val="Mexido" onclick="toggleChip(this,'ovo-prep')">🍳 <span id="chip-mexido">Mexido</span></button>
+        <button class="chip" data-val="Frito"  onclick="toggleChip(this,'ovo-prep')">🫕 <span id="chip-frito">Frito</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ OBSERVAÇÕES ═══════════════════════════════ -->
+  <div style="margin-top:18px">
+    <div class="cat-title"><span class="cat-icon">✏️</span><span id="cat-obs">Observações</span></div>
+    <textarea class="notes-area" id="obs" rows="3" placeholder="Alguma alergia, preferência ou detalhe especial..."></textarea>
+  </div>
+
+</main>
+
+<!-- Submit bar -->
+<div class="submit-bar">
+  <div class="order-summary">
+    <strong id="lbl-total">0 itens</strong>
+    <span id="lbl-mesa-info">Mesa —</span>
+  </div>
+  <button class="submit-btn" id="submit-btn" onclick="submitOrder()" disabled>
+    <span id="lbl-enviar">Enviar pedido →</span>
+  </button>
+</div>
+
+<!-- Thank-you -->
+<div id="ty">
+  <div class="ty-icon">✅</div>
+  <h1 class="ty-title" id="ty-title">Pedido enviado!</h1>
+  <p class="ty-msg" id="ty-msg">Seu pedido foi recebido. Em breve trazemos tudo até sua mesa.</p>
+  <div class="ty-mesa" id="ty-mesa">Mesa —</div>
+  <button class="ty-new" onclick="resetForm()" id="lbl-novo">+ Novo pedido</button>
+</div>
+
+<!-- Error -->
+<div id="err-screen">
+  <div style="font-size:2.8rem">⚠️</div>
+  <h2 id="err-title">Mesa não identificada</h2>
+  <p id="err-msg">Por favor, use o QR code da sua mesa para acessar o cardápio.</p>
+</div>
+
+<script>
+// ══ CONFIGURE ═══════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb69KTKdt5YgEf2NnAnj-nT-G-jaKj1e7R6cyBcPehA6Ah770a70RpiWayZDv2RgdAwg/exec";
+// ════════════════════════════════════════════════════════════════
+
+let mesa = null;
+let lang = localStorage.getItem('manaca-lang') || 'pt';
+
+// All item keys
+const ITEMS = [
+  'cafe','cha','leite','chocolate','suco',
+  'pao-frances','pao-branco','pao-integral','bolo','tapioca',
+  'salada-fruta','manteiga','geleia','mel',
+  'peito-peru','presunto','mozzarella','queijo-minas','goiabada',
+  'iogurte','granola','ovo'
+];
+const qty = {};
+ITEMS.forEach(k => qty[k] = 0);
+
+// Egg prep (multi-select)
+const ovoPrep = new Set();
+
+// ─── Translations ────────────────────────────────────────────
+const T = {
+  pt:{
+    cat_bebidas:'Bebidas', cat_paes:'Pães & Bolos', cat_frutas:'Frutas & Acompanhamentos',
+    cat_frios:'Frios', cat_laticinios:'Iogurte & Granola', cat_ovos:'Ovos', cat_obs:'Observações',
+    preparo:'Preparo', obs_ph:'Alguma alergia, preferência ou detalhe especial...',
+    enviar:'Enviar pedido →', enviando:'Enviando...',
+    itens:n=>n===1?'1 item':`${n} itens`, mesa_info:m=>`Mesa ${m}`,
+    ty_title:'Pedido enviado!', ty_msg:'Seu pedido foi recebido. Em breve trazemos tudo até sua mesa.',
+    novo:'+ Novo pedido', err_title:'Mesa não identificada',
+    err_msg:'Por favor, use o QR code da sua mesa para acessar o cardápio.',
+    // items
+    cafe:'Café', cha:'Chá inglês ou infusão',
+    leite:'Leite', leite_sub:'quente ou frio',
+    chocolate:'Nescau ou Ovomaltine',
+    suco:'Suco Manacá', suco_sub:'feito com 5 frutas',
+    pao_frances:'Pão francês', pao_branco:'Pão de forma branco',
+    pao_integral:'Pão de forma integral', bolo:'Bolo do dia', tapioca:'Tapioca',
+    salada_fruta:'Salada de fruta Manacá', manteiga:'Manteiga',
+    geleia:'Geleia de frutas vermelhas', mel:'Mel',
+    peito_peru:'Peito de peru', presunto:'Presunto',
+    mozzarella:'Queijo mozzarella', queijo_minas:'Queijo minas',
+    goiabada:'Goiabada',
+    iogurte:'Iogurte caseiro', granola:'Granola',
+    ovo:'Ovo',
+    cozido:'Cozido', mexido:'Mexido', frito:'Frito',
+  },
+  en:{
+    cat_bebidas:'Drinks', cat_paes:'Breads & Cakes', cat_frutas:'Fruit & Sides',
+    cat_frios:'Cold Cuts', cat_laticinios:'Yogurt & Granola', cat_ovos:'Eggs', cat_obs:'Notes',
+    preparo:'Preparation', obs_ph:'Any allergies, preferences, or special requests...',
+    enviar:'Place order →', enviando:'Sending...',
+    itens:n=>n===1?'1 item':`${n} items`, mesa_info:m=>`Table ${m}`,
+    ty_title:'Order received!', ty_msg:"Your order has been placed. We'll bring everything to your table shortly.",
+    novo:'+ New order', err_title:'Table not identified',
+    err_msg:'Please scan the QR code at your table to access the menu.',
+    cafe:'Coffee', cha:'English tea or herbal infusion',
+    leite:'Milk', leite_sub:'hot or cold',
+    chocolate:'Chocolate drink (Nescau/Ovomaltine)',
+    suco:'Manacá juice', suco_sub:'made with 5 fruits',
+    pao_frances:'French bread', pao_branco:'White sliced bread',
+    pao_integral:'Whole wheat bread', bolo:'Daily cake', tapioca:'Tapioca',
+    salada_fruta:'Manacá fruit salad', manteiga:'Butter',
+    geleia:'Red fruit jam', mel:'Honey',
+    peito_peru:'Smoked turkey breast', presunto:'Ham',
+    mozzarella:'Mozzarella cheese', queijo_minas:'Minas white cheese',
+    goiabada:'Guava paste',
+    iogurte:'Homemade yogurt', granola:'Granola',
+    ovo:'Egg',
+    cozido:'Boiled', mexido:'Scrambled', frito:'Fried',
+  },
+  es:{
+    cat_bebidas:'Bebidas', cat_paes:'Panes & Tortas', cat_frutas:'Frutas & Acompañamientos',
+    cat_frios:'Fiambres', cat_laticinios:'Yogur & Granola', cat_ovos:'Huevos', cat_obs:'Observaciones',
+    preparo:'Preparación', obs_ph:'¿Alguna alergia, preferencia o pedido especial?',
+    enviar:'Pedir →', enviando:'Enviando...',
+    itens:n=>n===1?'1 ítem':`${n} ítems`, mesa_info:m=>`Mesa ${m}`,
+    ty_title:'¡Pedido recibido!', ty_msg:'Tu pedido fue recibido. En breve lo llevamos a tu mesa.',
+    novo:'+ Nuevo pedido', err_title:'Mesa no identificada',
+    err_msg:'Por favor, usa el código QR de tu mesa para acceder al menú.',
+    cafe:'Café', cha:'Té inglés o infusión',
+    leite:'Leche', leite_sub:'caliente o fría',
+    chocolate:'Bebida de chocolate',
+    suco:'Jugo Manacá', suco_sub:'hecho con 5 frutas',
+    pao_frances:'Pan francés', pao_branco:'Pan de molde blanco',
+    pao_integral:'Pan integral', bolo:'Torta del día', tapioca:'Tapioca',
+    salada_fruta:'Ensalada de frutas Manacá', manteiga:'Mantequilla',
+    geleia:'Mermelada de frutas rojas', mel:'Miel',
+    peito_peru:'Pechuga de pavo ahumada', presunto:'Jamón',
+    mozzarella:'Queso mozzarella', queijo_minas:'Queso minas',
+    goiabada:'Pasta de guayaba',
+    iogurte:'Yogur casero', granola:'Granola',
+    ovo:'Huevo',
+    cozido:'Cocido', mexido:'Revuelto', frito:'Frito',
+  },
+  fr:{
+    cat_bebidas:'Boissons', cat_paes:'Pains & Gâteaux', cat_frutas:'Fruits & Accompagnements',
+    cat_frios:'Charcuterie', cat_laticinios:'Yaourt & Granola', cat_ovos:'Œufs', cat_obs:'Remarques',
+    preparo:'Cuisson', obs_ph:'Allergies, préférences ou demandes spéciales...',
+    enviar:'Commander →', enviando:'Envoi...',
+    itens:n=>n===1?'1 article':`${n} articles`, mesa_info:m=>`Table ${m}`,
+    ty_title:'Commande reçue !', ty_msg:'Votre commande a été enregistrée. Nous vous apportons tout sous peu.',
+    novo:'+ Nouvelle commande', err_title:'Table non identifiée',
+    err_msg:'Veuillez scanner le QR code de votre table pour accéder au menu.',
+    cafe:'Café', cha:'Thé anglais ou infusion',
+    leite:'Lait', leite_sub:'chaud ou froid',
+    chocolate:'Boisson chocolatée',
+    suco:'Jus Manacá', suco_sub:'fait avec 5 fruits',
+    pao_frances:'Pain français', pao_branco:'Pain de mie blanc',
+    pao_integral:'Pain complet', bolo:'Gâteau du jour', tapioca:'Tapioca',
+    salada_fruta:'Salade de fruits Manacá', manteiga:'Beurre',
+    geleia:'Confiture de fruits rouges', mel:'Miel',
+    peito_peru:'Blanc de dinde fumé', presunto:'Jambon',
+    mozzarella:'Fromage mozzarella', queijo_minas:'Fromage minas',
+    goiabada:'Pâte de goyave',
+    iogurte:'Yaourt maison', granola:'Granola',
+    ovo:'Œuf',
+    cozido:'À la coque', mexido:'Brouillé', frito:'Au plat',
+  }
+};
+
+// ─── Init ─────────────────────────────────────────────────────
+function init(){
+  const p = new URLSearchParams(window.location.search);
+  mesa = p.get('mesa');
+  if(!mesa || isNaN(Number(mesa))){
+    document.getElementById('err-screen').classList.add('show');
+  }
+  // Set active lang button
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.lang === lang);
+  });
+  applyLang(lang);
+}
+
+// ─── Language ─────────────────────────────────────────────────
+function setLang(btn){
+  lang = btn.dataset.lang;
+  localStorage.setItem('manaca-lang', lang);
+  document.querySelectorAll('.lang-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  applyLang(lang);
+}
+
+function s(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+
+function applyLang(l){
+  const t = T[l];
+  document.documentElement.lang = l;
+  // Categories
+  s('cat-bebidas', t.cat_bebidas); s('cat-paes', t.cat_paes);
+  s('cat-frutas', t.cat_frutas);   s('cat-frios', t.cat_frios);
+  s('cat-laticinios', t.cat_laticinios); s('cat-ovos', t.cat_ovos);
+  s('cat-obs', t.cat_obs);         s('lbl-preparo', t.preparo);
+  // UI
+  s('lbl-enviar', t.enviar); s('ty-title', t.ty_title); s('ty-msg', t.ty_msg);
+  s('lbl-novo', t.novo); s('err-title', t.err_title); s('err-msg', t.err_msg);
+  // Items
+  s('name-cafe', t.cafe); s('name-cha', t.cha);
+  s('name-leite', t.leite); s('sub-leite', t.leite_sub);
+  s('name-chocolate', t.chocolate);
+  s('name-suco', t.suco); s('sub-suco', t.suco_sub);
+  s('name-pao-frances', t.pao_frances); s('name-pao-branco', t.pao_branco);
+  s('name-pao-integral', t.pao_integral); s('name-bolo', t.bolo); s('name-tapioca', t.tapioca);
+  s('name-salada-fruta', t.salada_fruta); s('name-manteiga', t.manteiga);
+  s('name-geleia', t.geleia); s('name-mel', t.mel);
+  s('name-peito-peru', t.peito_peru); s('name-presunto', t.presunto);
+  s('name-mozzarella', t.mozzarella); s('name-queijo-minas', t.queijo_minas);
+  s('name-goiabada', t.goiabada);
+  s('name-iogurte', t.iogurte); s('name-granola', t.granola);
+  s('name-ovo', t.ovo);
+  s('chip-cozido', t.cozido); s('chip-mexido', t.mexido); s('chip-frito', t.frito);
+  const obs = document.getElementById('obs');
+  if(obs) obs.placeholder = t.obs_ph;
+  if(mesa){
+    s('mesa-badge', t.mesa_info(mesa));
+    s('lbl-mesa-info', t.mesa_info(mesa));
+    s('ty-mesa', t.mesa_info(mesa));
+  }
+  updateSummary();
+}
+
+// ─── Qty ──────────────────────────────────────────────────────
+function chg(item, delta){
+  qty[item] = Math.max(0, qty[item] + delta);
+  s(`qty-${item}`, qty[item]);
+  document.getElementById(`card-${item}`).classList.toggle('has-qty', qty[item] > 0);
+  // Egg sub-option
+  if(item === 'ovo'){
+    document.getElementById('opts-ovo').classList.toggle('visible', qty[item] > 0);
+  }
+  updateSummary();
+}
+
+// ─── Chips (multi-select) ─────────────────────────────────────
+function toggleChip(el, group){
+  el.classList.toggle('sel');
+  const val = el.dataset.val;
+  if(el.classList.contains('sel')) ovoPrep.add(val);
+  else ovoPrep.delete(val);
+}
+
+// ─── Summary bar ──────────────────────────────────────────────
+function updateSummary(){
+  const total = Object.values(qty).reduce((a,b)=>a+b, 0);
+  s('lbl-total', T[lang].itens(total));
+  document.getElementById('submit-btn').disabled = (total === 0);
+}
+
+// ─── Submit ───────────────────────────────────────────────────
+async function submitOrder(){
+  const btn = document.getElementById('submit-btn');
+  btn.classList.add('loading'); btn.disabled = true;
+  s('lbl-enviar', T[lang].enviando);
+
+  const order = {
+    action: 'newOrder',
+    mesa,
+    lang,
+    // bebidas
+    cafe:       qty.cafe,
+    cha:        qty.cha,
+    leite:      qty.leite,
+    chocolate:  qty.chocolate,
+    suco:       qty.suco,
+    // paes
+    paoFrances:   qty['pao-frances'],
+    paoBranco:    qty['pao-branco'],
+    paoIntegral:  qty['pao-integral'],
+    bolo:         qty.bolo,
+    tapioca:      qty.tapioca,
+    // frutas
+    saladaFruta:  qty['salada-fruta'],
+    manteiga:     qty.manteiga,
+    geleia:       qty.geleia,
+    mel:          qty.mel,
+    // frios
+    peitoPeru:    qty['peito-peru'],
+    presunto:     qty.presunto,
+    mozzarella:   qty.mozzarella,
+    queijominas:  qty['queijo-minas'],
+    goiabada:     qty.goiabada,
+    // laticinios
+    iogurte:      qty.iogurte,
+    granola:      qty.granola,
+    // ovos
+    ovo:          qty.ovo,
+    ovoPrep:      [...ovoPrep],
+    obs:          document.getElementById('obs').value.trim()
+  };
+
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(order)});
+  }catch(e){console.error(e);}
+
+  document.getElementById('ty').classList.add('show');
+}
+
+// ─── Reset ────────────────────────────────────────────────────
+function resetForm(){
+  ITEMS.forEach(k=>{
+    qty[k]=0;
+    s(`qty-${k}`,'0');
+    document.getElementById(`card-${k}`).classList.remove('has-qty');
+  });
+  ovoPrep.clear();
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  document.getElementById('opts-ovo').classList.remove('visible');
+  document.getElementById('obs').value='';
+  const btn = document.getElementById('submit-btn');
+  btn.classList.remove('loading'); btn.disabled=true;
+  s('lbl-enviar', T[lang].enviar);
+  document.getElementById('ty').classList.remove('show');
+  updateSummary();
+}
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
