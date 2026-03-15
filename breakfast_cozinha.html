@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cozinha — Manacá</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;900&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#0d0d0f;--card:#18181b;--border:#27272a;--green:#22c55e;--amber:#f59e0b;--red:#ef4444;--muted:#52525b;--text:#f4f4f5;--text2:#a1a1aa}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{background:var(--bg);color:var(--text);font-family:'Nunito',sans-serif;min-height:100vh}
+    header{background:#09090b;border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+    .logo{font-weight:900;font-size:1.1rem}.logo em{color:var(--green);font-style:normal}
+    .hrow{display:flex;align-items:center;gap:14px}
+    .dot{width:9px;height:9px;border-radius:50%;background:var(--green);flex-shrink:0;animation:blink 2s infinite}
+    .dot.off{background:var(--red);animation:none}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+    .upd{font-family:'Space Mono',monospace;font-size:.65rem;color:var(--muted)}
+    .badge{background:var(--green);color:#000;font-weight:900;font-size:.85rem;padding:4px 12px;border-radius:20px;min-width:36px;text-align:center}
+    .badge.zero{background:var(--muted)}
+    main{padding:16px;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;max-width:1400px;margin:0 auto}
+    .card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;overflow:hidden;animation:in .2s ease}
+    @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+    /* Card header */
+    .ch{display:flex;align-items:center;justify-content:space-between;padding:14px 16px 10px}
+    .mn{font-family:'Space Mono',monospace;font-size:2.4rem;font-weight:700;line-height:1;letter-spacing:-.03em}
+    .ml{font-size:.6rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-top:3px}
+    .ti{text-align:right}
+    .tc{font-family:'Space Mono',monospace;font-size:1.05rem;font-weight:700}
+    .tw{font-size:.72rem;font-weight:700;padding:3px 9px;border-radius:10px;margin-top:4px;display:inline-block}
+    .ok{background:rgba(34,197,94,.12);color:var(--green)}
+    .warn{background:rgba(245,158,11,.12);color:var(--amber)}
+    .late{background:rgba(239,68,68,.12);color:var(--red)}
+    /* Items by category */
+    .ci{padding:0 16px 12px;border-top:1px solid var(--border)}
+    .cat-label{font-size:.6rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:10px;margin-bottom:4px;padding-bottom:3px;border-bottom:1px solid var(--border)}
+    .il{display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.03)}
+    .il:last-child{border:none}
+    .iq{font-family:'Space Mono',monospace;font-size:1.1rem;font-weight:700;color:var(--amber);min-width:26px}
+    .in{font-size:.9rem;font-weight:600}
+    .is{font-size:.75rem;color:var(--text2);margin-left:2px}
+    .obs{margin:0 16px 12px;background:rgba(255,255,255,.04);border-radius:8px;padding:8px 10px;font-size:.8rem;color:var(--text2);font-style:italic}
+    .dbtn{width:100%;background:var(--green);color:#000;border:none;font-family:'Nunito',sans-serif;font-size:1rem;font-weight:900;padding:15px;cursor:pointer;letter-spacing:.02em;transition:background .15s;-webkit-tap-highlight-color:transparent;user-select:none}
+    .dbtn:active{background:#16a34a}
+    .dbtn.done{background:#27272a;color:var(--muted);cursor:default}
+    #empty{display:none;grid-column:1/-1;text-align:center;padding:80px 20px;color:var(--muted)}
+    #empty.show{display:block}
+    #empty .ico{font-size:3.5rem;margin-bottom:16px;opacity:.5}
+    #empty h2{font-size:1.3rem;color:var(--text2);margin-bottom:6px}
+    #toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#3f3f46;color:#fff;padding:10px 20px;border-radius:30px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+    #toast.show{opacity:1}
+    @media(max-width:500px){main{grid-template-columns:1fr}.mn{font-size:2rem}}
+  </style>
+</head>
+<body>
+<header>
+  <div>
+    <div class="logo">🍽️ Cozinha <em>Manacá</em></div>
+    <div class="upd" id="upd">Carregando...</div>
+  </div>
+  <div class="hrow">
+    <div class="dot" id="dot"></div>
+    <div class="badge zero" id="cnt">0</div>
+    <span style="font-size:.75rem;color:var(--muted)">pendentes</span>
+  </div>
+</header>
+<main id="grid">
+  <div id="empty"><div class="ico">☕</div><h2>Nenhum pedido pendente</h2><p>Novos pedidos aparecem aqui automaticamente.</p></div>
+</main>
+<div id="toast"></div>
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb69KTKdt5YgEf2NnAnj-nT-G-jaKj1e7R6cyBcPehA6Ah770a70RpiWayZDv2RgdAwg/exec";
+const REFRESH_SEC = 30;
+
+// Category structure for display
+const CATS = [
+  {
+    label: '☕ Bebidas',
+    fields: [
+      {key:'cafe',       label:'Café'},
+      {key:'cha',        label:'Chá / Infusão'},
+      {key:'leite',      label:'Leite'},
+      {key:'chocolate',  label:'Nescau / Ovomaltine'},
+      {key:'suco',       label:'Suco Manacá (5 frutas)'},
+    ]
+  },
+  {
+    label: '🍞 Pães & Bolos',
+    fields: [
+      {key:'paoFrances',  label:'Pão francês'},
+      {key:'paoBranco',   label:'Pão de forma branco'},
+      {key:'paoIntegral', label:'Pão integral'},
+      {key:'bolo',        label:'Bolo do dia'},
+      {key:'tapioca',     label:'Tapioca'},
+    ]
+  },
+  {
+    label: '🍓 Frutas & Acompanhamentos',
+    fields: [
+      {key:'saladaFruta', label:'Salada de fruta Manacá'},
+      {key:'manteiga',    label:'Manteiga'},
+      {key:'geleia',      label:'Geleia de frutas vermelhas'},
+      {key:'mel',         label:'Mel'},
+    ]
+  },
+  {
+    label: '🧀 Frios',
+    fields: [
+      {key:'peitoPeru',   label:'Peito de peru'},
+      {key:'presunto',    label:'Presunto'},
+      {key:'mozzarella',  label:'Queijo mozzarella'},
+      {key:'queijominas', label:'Queijo minas'},
+      {key:'goiabada',    label:'Goiabada'},
+    ]
+  },
+  {
+    label: '🥛 Iogurte & Granola',
+    fields: [
+      {key:'iogurte',  label:'Iogurte caseiro'},
+      {key:'granola',  label:'Granola'},
+    ]
+  },
+  {
+    label: '🍳 Ovos',
+    fields: [
+      {key:'ovo', label:'Ovo', subKey:'ovoPrep'},
+    ]
+  }
+];
+
+function p(n){return String(n).padStart(2,'0');}
+function minsAgo(hora){
+  const [h,m]=hora.split(':').map(Number);
+  const now=new Date(), then=new Date();
+  then.setHours(h,m,0,0);
+  return Math.max(0,Math.floor((now-then)/60000));
+}
+
+async function fetchOrders(){
+  try{
+    const r=await fetch(SCRIPT_URL+'?action=getOrders',{cache:'no-store'});
+    const d=await r.json();
+    if(d.success) render(d.orders);
+    setOnline(true);
+  }catch(e){setOnline(false);}
+  const n=new Date();
+  document.getElementById('upd').textContent=`Atualizado ${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())} · próximo ${REFRESH_SEC}s`;
+}
+
+function render(orders){
+  const grid=document.getElementById('grid');
+  grid.querySelectorAll('.card').forEach(c=>c.remove());
+  const cnt=document.getElementById('cnt');
+  cnt.textContent=orders.length;
+  cnt.className='badge'+(orders.length===0?' zero':'');
+  document.getElementById('empty').classList.toggle('show',orders.length===0);
+  orders.forEach(o=>grid.insertBefore(buildCard(o), document.getElementById('empty')));
+}
+
+function buildCard(o){
+  const div=document.createElement('div');
+  div.className='card'; div.id='c-'+o.id;
+  const mins=minsAgo(o.hora);
+  const wc=mins<5?'ok':mins<10?'warn':'late';
+  const wt=mins===0?'agora':mins+'min';
+
+  // Build items HTML by category
+  let itemsHTML = '';
+  CATS.forEach(cat => {
+    const lines = cat.fields
+      .filter(f => Number(o[f.key]) > 0)
+      .map(f => {
+        const sub = f.subKey && o[f.subKey] ? `<span class="is">(${o[f.subKey]})</span>` : '';
+        return `<div class="il"><span class="iq">${o[f.key]}×</span><span class="in">${f.label}</span>${sub}</div>`;
+      });
+    if(lines.length > 0){
+      itemsHTML += `<div class="cat-label">${cat.label}</div>` + lines.join('');
+    }
+  });
+
+  const obsHTML = o.obs ? `<div class="obs">💬 ${o.obs}</div>` : '';
+
+  div.innerHTML = `
+    <div class="ch">
+      <div><div class="mn">${p(o.mesa)}</div><div class="ml">MESA</div></div>
+      <div class="ti">
+        <div class="tc">${o.hora}</div>
+        <div class="tw ${wc}" id="w-${o.id}">${wt}</div>
+      </div>
+    </div>
+    <div class="ci">${itemsHTML}</div>
+    ${obsHTML}
+    <button class="dbtn" id="b-${o.id}" onclick="deliver('${o.id}',this)">✓ Entregue — Mesa ${o.mesa}</button>
+  `;
+  return div;
+}
+
+async function deliver(id,btn){
+  btn.textContent='⏳ Marcando...'; btn.disabled=true; btn.classList.add('done');
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'markDelivered',orderId:id})});
+    const card=document.getElementById('c-'+id);
+    if(card){
+      card.style.cssText='opacity:0;transform:scale(.97);transition:all .2s';
+      setTimeout(()=>{card.remove();updateCount();},200);
+    }
+    toast('✅ Entregue!');
+  }catch(e){
+    btn.textContent='✓ Entregue'; btn.disabled=false; btn.classList.remove('done');
+    toast('❌ Erro — tente de novo');
+  }
+}
+
+function updateCount(){
+  const n=document.querySelectorAll('.card').length;
+  const c=document.getElementById('cnt');
+  c.textContent=n; c.className='badge'+(n===0?' zero':'');
+  document.getElementById('empty').classList.toggle('show',n===0);
+}
+
+function setOnline(ok){document.getElementById('dot').className='dot'+(ok?'':' off');}
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+setInterval(()=>{
+  document.querySelectorAll('.card').forEach(card=>{
+    const id=card.id.replace('c-','');
+    const tc=card.querySelector('.tc');
+    if(!tc)return;
+    const mins=minsAgo(tc.textContent.trim());
+    const el=document.getElementById('w-'+id);
+    if(!el)return;
+    el.textContent=mins===0?'agora':mins+'min';
+    el.className='tw '+(mins<5?'ok':mins<10?'warn':'late');
+  });
+},60000);
+
+fetchOrders();
+setInterval(fetchOrders, REFRESH_SEC*1000);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)fetchOrders();});
+</script>
+</body>
+</html>
