@@ -625,7 +625,7 @@ async function submitOrder(){
   };
 
   try{
-    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(order)});
+    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify(order),mode:'no-cors'});
   }catch(e){console.error(e);}
 
   document.getElementById('ty').classList.add('show');
