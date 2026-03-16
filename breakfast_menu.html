@@ -21,7 +21,9 @@
 
     /* Header */
     header{background:var(--green);color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 16px rgba(0,0,0,.18)}
-    .header-top{display:flex;align-items:center;justify-content:space-between;padding:13px 16px 9px}
+    .header-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px 8px}
+    .header-left{display:flex;align-items:center;gap:10px}
+    .logo-img{height:38px;width:auto;border-radius:6px;flex-shrink:0}
     .pousada-name{font-family:'Playfair Display',serif;font-size:1.25rem;line-height:1.2}
     .pousada-name small{display:block;font-family:'Nunito',sans-serif;font-size:.6rem;font-weight:300;letter-spacing:.12em;text-transform:uppercase;opacity:.7;margin-top:2px}
     .mesa-badge{background:var(--amber);color:#fff;font-weight:700;font-size:.78rem;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
@@ -38,8 +40,8 @@
     .cat-title::after{content:'';flex:1;height:1px;background:var(--border)}
     .cat-icon{font-size:1.1rem}
 
-    /* Item row — compact horizontal layout */
-    .item-row{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:8px;display:flex;align-items:center;gap:0;overflow:hidden;box-shadow:0 1px 6px var(--shadow);transition:border-color .2s}
+    /* Item row */
+    .item-row{background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);margin-bottom:8px;display:flex;align-items:center;gap:0;overflow:hidden;box-shadow:0 1px 6px var(--shadow);transition:border-color .2s;flex-wrap:wrap}
     .item-row.has-qty{border-color:var(--green)}
     .item-label{flex:1;padding:12px 14px;min-width:0}
     .item-name{font-weight:700;font-size:.9rem;color:var(--brown);line-height:1.2}
@@ -50,7 +52,7 @@
     .qn{min-width:26px;text-align:center;font-weight:700;font-size:.95rem;color:var(--brown)}
 
     /* Sub-options */
-    .sub-opts{display:none;padding:0 14px 12px;border-top:1px dashed var(--border);background:var(--card);animation:fadeIn .2s ease}
+    .sub-opts{display:none;padding:0 14px 12px;border-top:1px dashed var(--border);background:var(--card);animation:fadeIn .2s ease;width:100%}
     .sub-opts.visible{display:block}
     @keyframes fadeIn{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:translateY(0)}}
     .sub-lbl{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;margin-top:8px}
@@ -64,13 +66,19 @@
     .notes-area::placeholder{color:#bdb0a0}
 
     /* Submit bar */
-    .submit-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:10px 18px;box-shadow:0 -4px 20px rgba(0,0,0,.09);z-index:200;display:flex;gap:10px;align-items:center;max-width:520px;margin:0 auto}
+    .submit-bar{position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:10px 14px;box-shadow:0 -4px 20px rgba(0,0,0,.09);z-index:200;display:flex;gap:8px;align-items:center;max-width:520px;margin:0 auto}
     .order-summary{flex:1;font-size:.78rem;color:var(--muted);line-height:1.3}
     .order-summary strong{display:block;color:var(--green);font-size:.92rem}
-    .submit-btn{background:var(--green);color:#fff;border:none;border-radius:40px;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;padding:12px 22px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 14px rgba(26,74,55,.28);transition:all .2s}
+    .help-btn{background:var(--amber);color:#fff;border:none;border-radius:40px;font-family:'Nunito',sans-serif;font-size:.8rem;font-weight:700;padding:10px 14px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;flex-shrink:0;transition:opacity .2s}
+    .help-btn:disabled{opacity:.5;cursor:default}
+    .submit-btn{background:var(--green);color:#fff;border:none;border-radius:40px;font-family:'Nunito',sans-serif;font-size:.92rem;font-weight:700;padding:12px 20px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;box-shadow:0 3px 14px rgba(26,74,55,.28);transition:all .2s;flex-shrink:0}
     .submit-btn:active{transform:scale(.97)}
     .submit-btn:disabled{background:#c4bdb4;box-shadow:none;cursor:default}
     .submit-btn.loading{background:var(--green-lt)}
+
+    /* Toast */
+    #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#2a1f0e;color:#fff;padding:10px 20px;border-radius:30px;font-size:.85rem;font-weight:700;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999;white-space:nowrap}
+    #toast.show{opacity:1}
 
     /* Thank-you */
     #ty{display:none;position:fixed;inset:0;background:var(--cream);z-index:1000;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px;animation:fadeIn .4s ease}
@@ -93,7 +101,10 @@
 
 <header>
   <div class="header-top">
-    <div class="pousada-name">Pousada Manacá<small>Ilha Grande · Abraão</small></div>
+    <div class="header-left">
+      <img src="assets/logo.png" alt="Pousada Manacá" class="logo-img" onerror="this.style.display='none'">
+      <div class="pousada-name">Pousada Manacá<small>Ilha Grande · Abraão</small></div>
+    </div>
     <div class="mesa-badge" id="mesa-badge">Mesa —</div>
   </div>
   <div class="lang-bar">
@@ -127,15 +138,21 @@
     </div>
   </div>
 
-  <div class="item-row" id="card-leite">
-    <div class="item-label">
-      <div class="item-name" id="name-leite">Leite</div>
-      <div class="item-sub" id="sub-leite">quente ou frio</div>
-    </div>
+  <div class="item-row" id="card-leite-q">
+    <div class="item-label"><div class="item-name" id="name-leite-q">Leite quente</div></div>
     <div class="qty-ctrl">
-      <button class="qb" onclick="chg('leite',-1)">−</button>
-      <span class="qn" id="qty-leite">0</span>
-      <button class="qb" onclick="chg('leite',1)">+</button>
+      <button class="qb" onclick="chg('leite-q',-1)">−</button>
+      <span class="qn" id="qty-leite-q">0</span>
+      <button class="qb" onclick="chg('leite-q',1)">+</button>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-leite-f">
+    <div class="item-label"><div class="item-name" id="name-leite-f">Leite frio</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('leite-f',-1)">−</button>
+      <span class="qn" id="qty-leite-f">0</span>
+      <button class="qb" onclick="chg('leite-f',1)">+</button>
     </div>
   </div>
 
@@ -205,6 +222,10 @@
       <button class="qb" onclick="chg('tapioca',-1)">−</button>
       <span class="qn" id="qty-tapioca">0</span>
       <button class="qb" onclick="chg('tapioca',1)">+</button>
+    </div>
+    <div class="sub-opts" id="opts-tapioca">
+      <p class="sub-lbl" id="lbl-tapioca-obs">Recheio</p>
+      <textarea class="notes-area" id="tapioca-obs" rows="2" placeholder="ex: queijo minas, presunto, mel..."></textarea>
     </div>
   </div>
 
@@ -319,19 +340,52 @@
   <!-- ══ OVOS ════════════════════════════════════ -->
   <div class="cat-title"><span class="cat-icon">🍳</span><span id="cat-ovos">Ovos</span></div>
 
-  <div class="item-row" id="card-ovo" style="flex-wrap:wrap">
-    <div class="item-label"><div class="item-name" id="name-ovo">Ovo</div></div>
+  <div class="item-row" id="card-ovo-frito">
+    <div class="item-label"><div class="item-name" id="name-ovo-frito">Ovo frito</div></div>
     <div class="qty-ctrl">
-      <button class="qb" onclick="chg('ovo',-1)">−</button>
-      <span class="qn" id="qty-ovo">0</span>
-      <button class="qb" onclick="chg('ovo',1)">+</button>
+      <button class="qb" onclick="chg('ovo-frito',-1)">−</button>
+      <span class="qn" id="qty-ovo-frito">0</span>
+      <button class="qb" onclick="chg('ovo-frito',1)">+</button>
     </div>
-    <div class="sub-opts" id="opts-ovo" style="width:100%">
-      <p class="sub-lbl" id="lbl-preparo">Preparo</p>
-      <div class="chips" id="chips-ovo">
-        <button class="chip" data-val="Cozido" onclick="toggleChip(this,'ovo-prep')">🥚 <span id="chip-cozido">Cozido</span></button>
-        <button class="chip" data-val="Mexido" onclick="toggleChip(this,'ovo-prep')">🍳 <span id="chip-mexido">Mexido</span></button>
-        <button class="chip" data-val="Frito"  onclick="toggleChip(this,'ovo-prep')">🫕 <span id="chip-frito">Frito</span></button>
+    <div class="sub-opts" id="opts-ovo-frito">
+      <p class="sub-lbl" id="lbl-ponto-frito">Ponto</p>
+      <div class="chips">
+        <button class="chip" data-val="mole" data-group="ovo-frito-modo" onclick="pickChip(this)"><span id="chip-frito-mole">Mole</span></button>
+        <button class="chip" data-val="bem passado" data-group="ovo-frito-modo" onclick="pickChip(this)"><span id="chip-frito-bem">Bem passado</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-ovo-mexido">
+    <div class="item-label"><div class="item-name" id="name-ovo-mexido">Ovo mexido</div></div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('ovo-mexido',-1)">−</button>
+      <span class="qn" id="qty-ovo-mexido">0</span>
+      <button class="qb" onclick="chg('ovo-mexido',1)">+</button>
+    </div>
+    <div class="sub-opts" id="opts-ovo-mexido">
+      <p class="sub-lbl" id="lbl-ponto-mexido">Ponto</p>
+      <div class="chips">
+        <button class="chip" data-val="cremoso" data-group="ovo-mexido-modo" onclick="pickChip(this)"><span id="chip-mexido-cremoso">Cremoso</span></button>
+        <button class="chip" data-val="seco" data-group="ovo-mexido-modo" onclick="pickChip(this)"><span id="chip-mexido-seco">Seco</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="item-row" id="card-ovo-quente">
+    <div class="item-label">
+      <div class="item-name" id="name-ovo-quente">Ovo quente (à la coque)</div>
+    </div>
+    <div class="qty-ctrl">
+      <button class="qb" onclick="chg('ovo-quente',-1)">−</button>
+      <span class="qn" id="qty-ovo-quente">0</span>
+      <button class="qb" onclick="chg('ovo-quente',1)">+</button>
+    </div>
+    <div class="sub-opts" id="opts-ovo-quente">
+      <p class="sub-lbl" id="lbl-ponto-quente">Ponto</p>
+      <div class="chips">
+        <button class="chip" data-val="mole" data-group="ovo-quente-modo" onclick="pickChip(this)"><span id="chip-quente-mole">Mole</span></button>
+        <button class="chip" data-val="duro" data-group="ovo-quente-modo" onclick="pickChip(this)"><span id="chip-quente-duro">Duro</span></button>
       </div>
     </div>
   </div>
@@ -350,6 +404,9 @@
     <strong id="lbl-total">0 itens</strong>
     <span id="lbl-mesa-info">Mesa —</span>
   </div>
+  <button class="help-btn" id="help-btn" onclick="sendHelp()">
+    🔔 <span id="lbl-ajuda">Ajuda</span>
+  </button>
   <button class="submit-btn" id="submit-btn" onclick="submitOrder()" disabled>
     <span id="lbl-enviar">Enviar pedido →</span>
   </button>
@@ -371,6 +428,9 @@
   <p id="err-msg">Por favor, use o QR code da sua mesa para acessar o cardápio.</p>
 </div>
 
+<!-- Toast -->
+<div id="toast"></div>
+
 <script>
 // ══ CONFIGURE ═══════════════════════════════════════════════════
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb69KTKdt5YgEf2NnAnj-nT-G-jaKj1e7R6cyBcPehA6Ah770a70RpiWayZDv2RgdAwg/exec";
@@ -379,34 +439,36 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwb69KTKdt5YgEf2NnAn
 let mesa = null;
 let lang = localStorage.getItem('manaca-lang') || 'pt';
 
-// All item keys
 const ITEMS = [
-  'cafe','cha','leite','chocolate','suco',
+  'cafe','cha','leite-q','leite-f','chocolate','suco',
   'pao-frances','pao-branco','pao-integral','bolo','tapioca',
   'salada-fruta','manteiga','geleia','mel',
   'peito-peru','presunto','mozzarella','queijo-minas','goiabada',
-  'iogurte','granola','ovo'
+  'iogurte','granola',
+  'ovo-frito','ovo-mexido','ovo-quente'
 ];
 const qty = {};
 ITEMS.forEach(k => qty[k] = 0);
 
-// Egg prep (multi-select)
-const ovoPrep = new Set();
+// Single-select chip state per group
+const chipState = {};
 
 // ─── Translations ────────────────────────────────────────────
 const T = {
   pt:{
     cat_bebidas:'Bebidas', cat_paes:'Pães & Bolos', cat_frutas:'Frutas & Acompanhamentos',
     cat_frios:'Frios', cat_laticinios:'Iogurte & Granola', cat_ovos:'Ovos', cat_obs:'Observações',
-    preparo:'Preparo', obs_ph:'Alguma alergia, preferência ou detalhe especial...',
+    ponto:'Ponto', recheio:'Recheio',
+    obs_ph:'Alguma alergia, preferência ou detalhe especial...',
+    tapioca_ph:'ex: queijo minas, presunto, mel...',
     enviar:'Enviar pedido →', enviando:'Enviando...',
+    ajuda:'Ajuda', ajuda_ok:'Pedido de ajuda enviado! Alguém virá em breve.',
     itens:n=>n===1?'1 item':`${n} itens`, mesa_info:m=>`Mesa ${m}`,
     ty_title:'Pedido enviado!', ty_msg:'Seu pedido foi recebido. Em breve trazemos tudo até sua mesa.',
     novo:'+ Novo pedido', err_title:'Mesa não identificada',
     err_msg:'Por favor, use o QR code da sua mesa para acessar o cardápio.',
-    // items
     cafe:'Café', cha:'Chá inglês ou infusão',
-    leite:'Leite', leite_sub:'quente ou frio',
+    leite_q:'Leite quente', leite_f:'Leite frio',
     chocolate:'Nescau ou Ovomaltine',
     suco:'Suco Manacá', suco_sub:'feito com 5 frutas',
     pao_frances:'Pão francês', pao_branco:'Pão de forma branco',
@@ -417,20 +479,25 @@ const T = {
     mozzarella:'Queijo mozzarella', queijo_minas:'Queijo minas',
     goiabada:'Goiabada',
     iogurte:'Iogurte caseiro', granola:'Granola',
-    ovo:'Ovo',
-    cozido:'Cozido', mexido:'Mexido', frito:'Frito',
+    ovo_frito:'Ovo frito', ovo_mexido:'Ovo mexido', ovo_quente:'Ovo quente (à la coque)',
+    frito_mole:'Mole', frito_bem:'Bem passado',
+    mexido_cremoso:'Cremoso', mexido_seco:'Seco',
+    quente_mole:'Mole', quente_duro:'Duro',
   },
   en:{
     cat_bebidas:'Drinks', cat_paes:'Breads & Cakes', cat_frutas:'Fruit & Sides',
     cat_frios:'Cold Cuts', cat_laticinios:'Yogurt & Granola', cat_ovos:'Eggs', cat_obs:'Notes',
-    preparo:'Preparation', obs_ph:'Any allergies, preferences, or special requests...',
+    ponto:'Style', recheio:'Filling',
+    obs_ph:'Any allergies, preferences, or special requests...',
+    tapioca_ph:'e.g. minas cheese, ham, honey...',
     enviar:'Place order →', enviando:'Sending...',
+    ajuda:'Help', ajuda_ok:'Help request sent! Someone will come shortly.',
     itens:n=>n===1?'1 item':`${n} items`, mesa_info:m=>`Table ${m}`,
     ty_title:'Order received!', ty_msg:"Your order has been placed. We'll bring everything to your table shortly.",
     novo:'+ New order', err_title:'Table not identified',
     err_msg:'Please scan the QR code at your table to access the menu.',
     cafe:'Coffee', cha:'English tea or herbal infusion',
-    leite:'Milk', leite_sub:'hot or cold',
+    leite_q:'Hot milk', leite_f:'Cold milk',
     chocolate:'Chocolate drink (Nescau/Ovomaltine)',
     suco:'Manacá juice', suco_sub:'made with 5 fruits',
     pao_frances:'French bread', pao_branco:'White sliced bread',
@@ -441,20 +508,25 @@ const T = {
     mozzarella:'Mozzarella cheese', queijo_minas:'Minas white cheese',
     goiabada:'Guava paste',
     iogurte:'Homemade yogurt', granola:'Granola',
-    ovo:'Egg',
-    cozido:'Boiled', mexido:'Scrambled', frito:'Fried',
+    ovo_frito:'Fried egg', ovo_mexido:'Scrambled egg', ovo_quente:'Soft-boiled egg (à la coque)',
+    frito_mole:'Runny yolk', frito_bem:'Well done',
+    mexido_cremoso:'Creamy', mexido_seco:'Firm',
+    quente_mole:'Soft', quente_duro:'Hard',
   },
   es:{
     cat_bebidas:'Bebidas', cat_paes:'Panes & Tortas', cat_frutas:'Frutas & Acompañamientos',
     cat_frios:'Fiambres', cat_laticinios:'Yogur & Granola', cat_ovos:'Huevos', cat_obs:'Observaciones',
-    preparo:'Preparación', obs_ph:'¿Alguna alergia, preferencia o pedido especial?',
+    ponto:'Punto', recheio:'Relleno',
+    obs_ph:'¿Alguna alergia, preferencia o pedido especial?',
+    tapioca_ph:'ej: queso minas, jamón, miel...',
     enviar:'Pedir →', enviando:'Enviando...',
+    ajuda:'Ayuda', ajuda_ok:'¡Solicitud enviada! Alguien vendrá pronto.',
     itens:n=>n===1?'1 ítem':`${n} ítems`, mesa_info:m=>`Mesa ${m}`,
     ty_title:'¡Pedido recibido!', ty_msg:'Tu pedido fue recibido. En breve lo llevamos a tu mesa.',
     novo:'+ Nuevo pedido', err_title:'Mesa no identificada',
     err_msg:'Por favor, usa el código QR de tu mesa para acceder al menú.',
     cafe:'Café', cha:'Té inglés o infusión',
-    leite:'Leche', leite_sub:'caliente o fría',
+    leite_q:'Leche caliente', leite_f:'Leche fría',
     chocolate:'Bebida de chocolate',
     suco:'Jugo Manacá', suco_sub:'hecho con 5 frutas',
     pao_frances:'Pan francés', pao_branco:'Pan de molde blanco',
@@ -465,20 +537,25 @@ const T = {
     mozzarella:'Queso mozzarella', queijo_minas:'Queso minas',
     goiabada:'Pasta de guayaba',
     iogurte:'Yogur casero', granola:'Granola',
-    ovo:'Huevo',
-    cozido:'Cocido', mexido:'Revuelto', frito:'Frito',
+    ovo_frito:'Huevo frito', ovo_mexido:'Huevo revuelto', ovo_quente:'Huevo pasado por agua',
+    frito_mole:'Poco hecho', frito_bem:'Bien hecho',
+    mexido_cremoso:'Cremoso', mexido_seco:'Seco',
+    quente_mole:'Blando', quente_duro:'Duro',
   },
   fr:{
     cat_bebidas:'Boissons', cat_paes:'Pains & Gâteaux', cat_frutas:'Fruits & Accompagnements',
     cat_frios:'Charcuterie', cat_laticinios:'Yaourt & Granola', cat_ovos:'Œufs', cat_obs:'Remarques',
-    preparo:'Cuisson', obs_ph:'Allergies, préférences ou demandes spéciales...',
+    ponto:'Cuisson', recheio:'Garniture',
+    obs_ph:'Allergies, préférences ou demandes spéciales...',
+    tapioca_ph:'ex: fromage minas, jambon, miel...',
     enviar:'Commander →', enviando:'Envoi...',
+    ajuda:'Aide', ajuda_ok:'Demande d\'aide envoyée ! Quelqu\'un arrive.',
     itens:n=>n===1?'1 article':`${n} articles`, mesa_info:m=>`Table ${m}`,
     ty_title:'Commande reçue !', ty_msg:'Votre commande a été enregistrée. Nous vous apportons tout sous peu.',
     novo:'+ Nouvelle commande', err_title:'Table non identifiée',
     err_msg:'Veuillez scanner le QR code de votre table pour accéder au menu.',
     cafe:'Café', cha:'Thé anglais ou infusion',
-    leite:'Lait', leite_sub:'chaud ou froid',
+    leite_q:'Lait chaud', leite_f:'Lait froid',
     chocolate:'Boisson chocolatée',
     suco:'Jus Manacá', suco_sub:'fait avec 5 fruits',
     pao_frances:'Pain français', pao_branco:'Pain de mie blanc',
@@ -489,8 +566,10 @@ const T = {
     mozzarella:'Fromage mozzarella', queijo_minas:'Fromage minas',
     goiabada:'Pâte de goyave',
     iogurte:'Yaourt maison', granola:'Granola',
-    ovo:'Œuf',
-    cozido:'À la coque', mexido:'Brouillé', frito:'Au plat',
+    ovo_frito:'Œuf au plat', ovo_mexido:'Œuf brouillé', ovo_quente:'Œuf à la coque',
+    frito_mole:'Coulant', frito_bem:'Bien cuit',
+    mexido_cremoso:'Crémeux', mexido_seco:'Ferme',
+    quente_mole:'Mollet', quente_duro:'Dur',
   }
 };
 
@@ -501,7 +580,6 @@ function init(){
   if(!mesa || isNaN(Number(mesa))){
     document.getElementById('err-screen').classList.add('show');
   }
-  // Set active lang button
   document.querySelectorAll('.lang-btn').forEach(b=>{
     b.classList.toggle('active', b.dataset.lang === lang);
   });
@@ -518,39 +596,42 @@ function setLang(btn){
 }
 
 function s(id,v){const e=document.getElementById(id);if(e)e.textContent=v;}
+function sp(id,v){const e=document.getElementById(id);if(e)e.placeholder=v;}
 
 function applyLang(l){
   const t = T[l];
   document.documentElement.lang = l;
-  // Categories
-  s('cat-bebidas', t.cat_bebidas); s('cat-paes', t.cat_paes);
-  s('cat-frutas', t.cat_frutas);   s('cat-frios', t.cat_frios);
-  s('cat-laticinios', t.cat_laticinios); s('cat-ovos', t.cat_ovos);
-  s('cat-obs', t.cat_obs);         s('lbl-preparo', t.preparo);
-  // UI
-  s('lbl-enviar', t.enviar); s('ty-title', t.ty_title); s('ty-msg', t.ty_msg);
-  s('lbl-novo', t.novo); s('err-title', t.err_title); s('err-msg', t.err_msg);
-  // Items
-  s('name-cafe', t.cafe); s('name-cha', t.cha);
-  s('name-leite', t.leite); s('sub-leite', t.leite_sub);
-  s('name-chocolate', t.chocolate);
-  s('name-suco', t.suco); s('sub-suco', t.suco_sub);
-  s('name-pao-frances', t.pao_frances); s('name-pao-branco', t.pao_branco);
-  s('name-pao-integral', t.pao_integral); s('name-bolo', t.bolo); s('name-tapioca', t.tapioca);
-  s('name-salada-fruta', t.salada_fruta); s('name-manteiga', t.manteiga);
-  s('name-geleia', t.geleia); s('name-mel', t.mel);
-  s('name-peito-peru', t.peito_peru); s('name-presunto', t.presunto);
-  s('name-mozzarella', t.mozzarella); s('name-queijo-minas', t.queijo_minas);
-  s('name-goiabada', t.goiabada);
-  s('name-iogurte', t.iogurte); s('name-granola', t.granola);
-  s('name-ovo', t.ovo);
-  s('chip-cozido', t.cozido); s('chip-mexido', t.mexido); s('chip-frito', t.frito);
-  const obs = document.getElementById('obs');
-  if(obs) obs.placeholder = t.obs_ph;
+  s('cat-bebidas',t.cat_bebidas); s('cat-paes',t.cat_paes);
+  s('cat-frutas',t.cat_frutas);   s('cat-frios',t.cat_frios);
+  s('cat-laticinios',t.cat_laticinios); s('cat-ovos',t.cat_ovos);
+  s('cat-obs',t.cat_obs);
+  s('lbl-ponto-frito',t.ponto); s('lbl-ponto-mexido',t.ponto); s('lbl-ponto-quente',t.ponto);
+  s('lbl-tapioca-obs',t.recheio);
+  s('lbl-enviar',t.enviar); s('lbl-ajuda',t.ajuda);
+  s('ty-title',t.ty_title); s('ty-msg',t.ty_msg);
+  s('lbl-novo',t.novo); s('err-title',t.err_title); s('err-msg',t.err_msg);
+  // items
+  s('name-cafe',t.cafe); s('name-cha',t.cha);
+  s('name-leite-q',t.leite_q); s('name-leite-f',t.leite_f);
+  s('name-chocolate',t.chocolate);
+  s('name-suco',t.suco); s('sub-suco',t.suco_sub);
+  s('name-pao-frances',t.pao_frances); s('name-pao-branco',t.pao_branco);
+  s('name-pao-integral',t.pao_integral); s('name-bolo',t.bolo); s('name-tapioca',t.tapioca);
+  s('name-salada-fruta',t.salada_fruta); s('name-manteiga',t.manteiga);
+  s('name-geleia',t.geleia); s('name-mel',t.mel);
+  s('name-peito-peru',t.peito_peru); s('name-presunto',t.presunto);
+  s('name-mozzarella',t.mozzarella); s('name-queijo-minas',t.queijo_minas);
+  s('name-goiabada',t.goiabada);
+  s('name-iogurte',t.iogurte); s('name-granola',t.granola);
+  s('name-ovo-frito',t.ovo_frito); s('name-ovo-mexido',t.ovo_mexido); s('name-ovo-quente',t.ovo_quente);
+  s('chip-frito-mole',t.frito_mole); s('chip-frito-bem',t.frito_bem);
+  s('chip-mexido-cremoso',t.mexido_cremoso); s('chip-mexido-seco',t.mexido_seco);
+  s('chip-quente-mole',t.quente_mole); s('chip-quente-duro',t.quente_duro);
+  sp('obs',t.obs_ph); sp('tapioca-obs',t.tapioca_ph);
   if(mesa){
-    s('mesa-badge', t.mesa_info(mesa));
-    s('lbl-mesa-info', t.mesa_info(mesa));
-    s('ty-mesa', t.mesa_info(mesa));
+    s('mesa-badge',t.mesa_info(mesa));
+    s('lbl-mesa-info',t.mesa_info(mesa));
+    s('ty-mesa',t.mesa_info(mesa));
   }
   updateSummary();
 }
@@ -560,19 +641,26 @@ function chg(item, delta){
   qty[item] = Math.max(0, qty[item] + delta);
   s(`qty-${item}`, qty[item]);
   document.getElementById(`card-${item}`).classList.toggle('has-qty', qty[item] > 0);
-  // Egg sub-option
-  if(item === 'ovo'){
-    document.getElementById('opts-ovo').classList.toggle('visible', qty[item] > 0);
+  // Show/hide sub-options
+  if(['ovo-frito','ovo-mexido','ovo-quente','tapioca'].includes(item)){
+    document.getElementById(`opts-${item}`).classList.toggle('visible', qty[item] > 0);
   }
   updateSummary();
 }
 
-// ─── Chips (multi-select) ─────────────────────────────────────
-function toggleChip(el, group){
-  el.classList.toggle('sel');
-  const val = el.dataset.val;
-  if(el.classList.contains('sel')) ovoPrep.add(val);
-  else ovoPrep.delete(val);
+// ─── Chips — single-select per group ──────────────────────────
+function pickChip(el){
+  const group = el.dataset.group;
+  // Deselect all chips in this group
+  document.querySelectorAll(`.chip[data-group="${group}"]`).forEach(c=>c.classList.remove('sel'));
+  // Select this one (toggle off if already selected)
+  const wasSelected = chipState[group] === el.dataset.val;
+  if(!wasSelected){
+    el.classList.add('sel');
+    chipState[group] = el.dataset.val;
+  } else {
+    chipState[group] = null;
+  }
 }
 
 // ─── Summary bar ──────────────────────────────────────────────
@@ -580,6 +668,26 @@ function updateSummary(){
   const total = Object.values(qty).reduce((a,b)=>a+b, 0);
   s('lbl-total', T[lang].itens(total));
   document.getElementById('submit-btn').disabled = (total === 0);
+}
+
+// ─── Toast ────────────────────────────────────────────────────
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ─── Help ─────────────────────────────────────────────────────
+async function sendHelp(){
+  const btn = document.getElementById('help-btn');
+  btn.disabled = true;
+  try{
+    await fetch(SCRIPT_URL,{method:'POST',headers:{'Content-Type':'text/plain'},
+      body:JSON.stringify({action:'ajudaMesa', mesa}), mode:'no-cors'});
+  }catch(e){}
+  showToast(T[lang].ajuda_ok);
+  setTimeout(()=>{ btn.disabled = false; }, 15000);
 }
 
 // ─── Submit ───────────────────────────────────────────────────
@@ -592,35 +700,35 @@ async function submitOrder(){
     action: 'newOrder',
     mesa,
     lang,
-    // bebidas
     cafe:       qty.cafe,
     cha:        qty.cha,
-    leite:      qty.leite,
+    leiteQ:     qty['leite-q'],
+    leiteF:     qty['leite-f'],
     chocolate:  qty.chocolate,
     suco:       qty.suco,
-    // paes
     paoFrances:   qty['pao-frances'],
     paoBranco:    qty['pao-branco'],
     paoIntegral:  qty['pao-integral'],
     bolo:         qty.bolo,
     tapioca:      qty.tapioca,
-    // frutas
+    tapiocaObs:   document.getElementById('tapioca-obs').value.trim(),
     saladaFruta:  qty['salada-fruta'],
     manteiga:     qty.manteiga,
     geleia:       qty.geleia,
     mel:          qty.mel,
-    // frios
     peitoPeru:    qty['peito-peru'],
     presunto:     qty.presunto,
     mozzarella:   qty.mozzarella,
     queijominas:  qty['queijo-minas'],
     goiabada:     qty.goiabada,
-    // laticinios
     iogurte:      qty.iogurte,
     granola:      qty.granola,
-    // ovos
-    ovo:          qty.ovo,
-    ovoPrep:      [...ovoPrep],
+    ovoFrito:     qty['ovo-frito'],
+    ovoFritoModo: chipState['ovo-frito-modo'] || '',
+    ovoMexido:    qty['ovo-mexido'],
+    ovoMexidoModo:chipState['ovo-mexido-modo'] || '',
+    ovoQuente:    qty['ovo-quente'],
+    ovoQuenteModo:chipState['ovo-quente-modo'] || '',
     obs:          document.getElementById('obs').value.trim()
   };
 
@@ -638,10 +746,13 @@ function resetForm(){
     s(`qty-${k}`,'0');
     document.getElementById(`card-${k}`).classList.remove('has-qty');
   });
-  ovoPrep.clear();
+  ['ovo-frito','ovo-mexido','ovo-quente','tapioca'].forEach(k=>{
+    document.getElementById(`opts-${k}`).classList.remove('visible');
+  });
   document.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
-  document.getElementById('opts-ovo').classList.remove('visible');
+  Object.keys(chipState).forEach(k=>delete chipState[k]);
   document.getElementById('obs').value='';
+  document.getElementById('tapioca-obs').value='';
   const btn = document.getElementById('submit-btn');
   btn.classList.remove('loading'); btn.disabled=true;
   s('lbl-enviar', T[lang].enviar);
